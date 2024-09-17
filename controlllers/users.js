@@ -1,4 +1,7 @@
 const User = require("../models/user");
+const BAD_REQUEST_STATUS_CODE = require("../utils/errors");
+const EXISTENTIAL_STATUS_CODE = require("../utils/errors");
+const DEFAULT_STATUS_CODE = require("../utils/errors");
 // GET USERS
 
 const getUsers = (req, res) => {
@@ -9,11 +12,17 @@ const getUsers = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        return res.status(404).send({ message: err.message });
+        return res
+          .status(EXISTENTIAL_STATUS_CODE)
+          .send({ EXISTENTIAL_STATUS_CODE: message });
       } else {
-        res.status(400).send({ message: err.message });
+        res
+          .status(BAD_REQUEST_STATUS_CODE)
+          .send({ BAD_REQUEST_STATUS_CODE: message });
       }
-      return res.status(500).send({ message: err.message });
+      return res
+        .status(DEFAULT_STATUS_CODE)
+        .send({ DEFAULT_STATUS_CODE: message });
     });
 };
 
@@ -26,9 +35,13 @@ const createUser = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "ValidationError") {
-        return res.status(400).send({ message: err.message });
+        return res
+          .status(BAD_REQUEST_STATUS_CODE)
+          .send({ BAD_REQUEST_STATUS_CODE: message });
       }
-      return res.status(500).send({ message: err.message });
+      return res
+        .status(DEFAULT_STATUS_CODE)
+        .send({ DEFAULT_STATUS_CODE: message });
     });
 };
 
