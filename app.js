@@ -4,6 +4,8 @@ const mainRouter = require("./routes/index");
 const PORT = 3001;
 const app = express();
 
+// require("dotenv").config();
+
 mongoose
   .connect("mongodb://127.0.0.1:27017/wtwr_db")
   .then(() => {
@@ -15,5 +17,5 @@ app.use(express.json());
 app.use("/", mainRouter);
 
 app.listen(PORT, () => {
-  console.log(`server is listening to radio ${PORT} FM`);
+  console.log(`server is listening on port: ${PORT}`);
 });

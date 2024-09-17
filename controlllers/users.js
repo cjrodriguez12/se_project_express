@@ -1,7 +1,7 @@
 const User = require("../models/user");
-const BAD_REQUEST_STATUS_CODE = require("../utils/errors");
-const EXISTENTIAL_STATUS_CODE = require("../utils/errors");
-const DEFAULT_STATUS_CODE = require("../utils/errors");
+const { BAD_REQUEST_STATUS_CODE } = require("../utils/errors");
+const { EXISTENTIAL_STATUS_CODE } = require("../utils/errors");
+const { DEFAULT_STATUS_CODE } = require("../utils/errors");
 // GET USERS
 
 const getUsers = (req, res) => {

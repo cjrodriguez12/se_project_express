@@ -53,10 +53,11 @@ const dislikeItem = (req, res) =>
     req.params.itemId,
     { $pull: { likes: req.user._id } }, // remove _id from the array
     { new: true }
-  );
-orFail().catch((e) => {
-  res.status(DEFAULT_STATUS_CODE).send({ DEFAULT_STATUS_CODE: message, e });
-});
+  )
+    .orFail()
+    .catch((e) => {
+      res.status(DEFAULT_STATUS_CODE).send({ DEFAULT_STATUS_CODE: message, e });
+    });
 module.exports = {
   createItem,
   likeItem,
