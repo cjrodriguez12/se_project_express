@@ -6,9 +6,12 @@ const {
   dislikeItem,
 } = require("../controlllers/clothingItem");
 //crud
-router.post("/", createItem);
+router.get("/items");
 //create
+router.post("/", createItem);
+//delete items
+router.delete("/items/:itemId");
+// Like and dislike
 router.put("/items/:itemId/likes", likeItem);
-
 router.delete("/items/:itemId/likes", dislikeItem);
 module.exports = router;

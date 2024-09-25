@@ -6,6 +6,24 @@ const DEFAULT_STATUS_CODE = require("../utils/errors");
 const createItem = (req, res) => {
   console.log(req);
   console.log(req.body);
+  const { name, weather, imageUrl } = req.body;
+  ClothingItem.create({ name, weather, imageUrl })
+    .then((item) => {
+      console.log(item);
+      res.send({ data: item });
+    })
+    .catch((e) => {
+      if (e.name === "ValidationError") {
+        return res
+          .status(EXISTENTIAL_STATUS_CODE)
+          .send({ EXISTENTIAL_STATUS_CODE: message });
+      } else {
+        // if no errors match, return a response with status code 500
+        return res
+          .status(DEFAULT_STATUS_CODE)
+          .send({ DEFAULT_STATUS_CODE: message });
+      }
+    });
   const { userId } = req.params;
   ClothingItem.findById(userId)
     .orFail() // throws a DocumentNotFoundError
@@ -17,24 +35,6 @@ const createItem = (req, res) => {
         `Error ${err.name} with the message ${err.message} has occurred while executing the code`,
         error
       );
-    });
-  const { name, weather, imageURL } = req.body;
-  ClothingItem.create({ name, weather, imageURL })
-    .then((item) => {
-      console.log(item);
-      res.send({ data: item });
-    })
-    .catch((e) => {
-      if (e.name === "BadRequest") {
-        return res
-          .status(EXISTENTIAL_STATUS_CODE)
-          .send({ EXISTENTIAL_STATUS_CODE: message });
-      } else {
-        // if no errors match, return a response with status code 500
-        return res
-          .status(DEFAULT_STATUS_CODE)
-          .send({ DEFAULT_STATUS_CODE: message });
-      }
     });
 };
 
