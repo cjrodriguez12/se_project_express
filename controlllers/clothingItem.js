@@ -45,8 +45,19 @@ const likeItem = (req, res) =>
     { new: true }
   )
     .orFail()
+    .then((item) => {
+      res.send(item); // skipped, because an error was thrown
+    })
     .catch((e) => {
-      res.status(DEFAULT_STATUS_CODE).send({ DEFAULT_STATUS_CODE: message, e });
+      if (err.name === "DocumentNotFoundError") {
+        res
+          .status(EXISTENTIAL_STATUS_CODE)
+          .send({ EXISTENTIAL_STATUS_CODE: message, e });
+      } else if (err.name === "CastError") {
+        res
+          .status(BAD_REQUEST_STATUS_CODE)
+          .send({ BAD_REQUEST_STATUS_CODE: message, e });
+      }
     });
 const dislikeItem = (req, res) =>
   ClothingItem.findByIdAndUpdate(
@@ -55,8 +66,19 @@ const dislikeItem = (req, res) =>
     { new: true }
   )
     .orFail()
+    .then((item) => {
+      res.send(item); // skipped, because an error was thrown
+    })
     .catch((e) => {
-      res.status(DEFAULT_STATUS_CODE).send({ DEFAULT_STATUS_CODE: message, e });
+      if (err.name === "DocumentNotFoundError") {
+        res
+          .status(EXISTENTIAL_STATUS_CODE)
+          .send({ EXISTENTIAL_STATUS_CODE: message, e });
+      } else if (err.name === "CastError") {
+        res
+          .status(BAD_REQUEST_STATUS_CODE)
+          .send({ BAD_REQUEST_STATUS_CODE: message, e });
+      }
     });
 module.exports = {
   createItem,

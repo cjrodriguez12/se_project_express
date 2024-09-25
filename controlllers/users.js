@@ -3,10 +3,29 @@ const { BAD_REQUEST_STATUS_CODE } = require("../utils/errors");
 const { EXISTENTIAL_STATUS_CODE } = require("../utils/errors");
 const { DEFAULT_STATUS_CODE } = require("../utils/errors");
 // GET USERS
-
-const getUsers = (req, res) => {
+const findUsers = (req, res) => {
   const { userId } = req.params;
   User.findById(userId)
+    .orFail()
+    .then((user) => res.send(user))
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "DocumentNotFoundError") {
+        return res
+          .status(EXISTENTIAL_STATUS_CODE)
+          .send({ EXISTENTIAL_STATUS_CODE: message });
+      } else {
+        res
+          .status(BAD_REQUEST_STATUS_CODE)
+          .send({ BAD_REQUEST_STATUS_CODE: message });
+      }
+      return res
+        .status(DEFAULT_STATUS_CODE)
+        .send({ DEFAULT_STATUS_CODE: message });
+    });
+};
+const getUsers = (req, res) => {
+  User.find({})
     .orFail()
     .then((user) => res.send(user))
     .catch((err) => {
@@ -45,4 +64,4 @@ const createUser = (req, res) => {
     });
 };
 
-module.exports = { getUsers, createUser };
+module.exports = { getUsers, createUser, findUsers };
