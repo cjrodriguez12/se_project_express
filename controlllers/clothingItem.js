@@ -1,8 +1,52 @@
-const express = require("express");
 const ClothingItem = require("../models/clothingItem");
 const BAD_REQUEST_STATUS_CODE = require("../utils/errors");
 const EXISTENTIAL_STATUS_CODE = require("../utils/errors");
 const DEFAULT_STATUS_CODE = require("../utils/errors");
+const getItems = (req, res) => {
+  ClothingItem.find({})
+    .orFail()
+    .then((user) => res.send(user))
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "DocumentNotFoundError") {
+        return res
+          .status(EXISTENTIAL_STATUS_CODE)
+          .send({ EXISTENTIAL_STATUS_CODE: message });
+      } else if (err.name === "CastError") {
+        res
+          .status(BAD_REQUEST_STATUS_CODE)
+          .send({ BAD_REQUEST_STATUS_CODE: message });
+      }
+      return res
+        .status(DEFAULT_STATUS_CODE)
+        .send({ DEFAULT_STATUS_CODE: message });
+    });
+};
+const deleteItem = (req, res) =>
+  ClothingItem.findByIdAndUpdate(
+    req.params.itemId,
+    { $pull: ClothingItem.findById }, // clothing item from the array
+    { new: true }
+  )
+    .orFail()
+    .then((item) => {
+      res.send(item); // skipped, because an error was thrown
+    })
+    .catch((e) => {
+      if (err.name === "DocumentNotFoundError") {
+        res
+          .status(EXISTENTIAL_STATUS_CODE)
+          .send({ EXISTENTIAL_STATUS_CODE: message, e });
+      } else if (err.name === "CastError") {
+        res
+          .status(BAD_REQUEST_STATUS_CODE)
+          .send({ BAD_REQUEST_STATUS_CODE: message, e });
+      } else {
+        res
+          .status(DEFAULT_STATUS_CODE)
+          .send({ DEFAULT_STATUS_CODE: message, e });
+      }
+    });
 const createItem = (req, res) => {
   console.log(req);
   console.log(req.body);
@@ -24,7 +68,7 @@ const createItem = (req, res) => {
           .send({ DEFAULT_STATUS_CODE: message });
       }
     });
-  const { userId } = req.params;
+
   ClothingItem.findById(userId)
     .orFail() // throws a DocumentNotFoundError
     .then((item) => {
@@ -57,6 +101,10 @@ const likeItem = (req, res) =>
         res
           .status(BAD_REQUEST_STATUS_CODE)
           .send({ BAD_REQUEST_STATUS_CODE: message, e });
+      } else {
+        res
+          .status(DEFAULT_STATUS_CODE)
+          .send({ DEFAULT_STATUS_CODE: message, e });
       }
     });
 const dislikeItem = (req, res) =>
@@ -78,10 +126,16 @@ const dislikeItem = (req, res) =>
         res
           .status(BAD_REQUEST_STATUS_CODE)
           .send({ BAD_REQUEST_STATUS_CODE: message, e });
+      } else {
+        res
+          .status(DEFAULT_STATUS_CODE)
+          .send({ DEFAULT_STATUS_CODE: message, e });
       }
     });
 module.exports = {
   createItem,
   likeItem,
   dislikeItem,
+  deleteItem,
+  getItems,
 };

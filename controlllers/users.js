@@ -34,7 +34,7 @@ const getUsers = (req, res) => {
         return res
           .status(EXISTENTIAL_STATUS_CODE)
           .send({ EXISTENTIAL_STATUS_CODE: message });
-      } else {
+      } else if (err.name === "CastError") {
         res
           .status(BAD_REQUEST_STATUS_CODE)
           .send({ BAD_REQUEST_STATUS_CODE: message });
