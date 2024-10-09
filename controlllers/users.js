@@ -8,40 +8,41 @@ const findUsers = (req, res) => {
   User.findById(userId)
     .orFail()
     .then((user) => res.send(user))
-    .catch((err) => {
-      console.error(err);
-      if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(EXISTENTIAL_STATUS_CODE)
-          .send({ EXISTENTIAL_STATUS_CODE: message });
-      } else {
+    .catch((error) => {
+      console.error(error);
+      if (error.name === "DocumentNotFoundError") {
         res
-          .status(BAD_REQUEST_STATUS_CODE)
-          .send({ BAD_REQUEST_STATUS_CODE: message });
+          .status(EXISTENTIAL_STATUS_CODE.error)
+          .send({ message: EXISTENTIAL_STATUS_CODE.message });
+      } else if (error.name === "CastError") {
+        res
+          .status(BAD_REQUEST_STATUS_CODE.error)
+          .send({ message: BAD_REQUEST_STATUS_CODE.message });
       }
       return res
-        .status(DEFAULT_STATUS_CODE)
-        .send({ DEFAULT_STATUS_CODE: message });
+        .status(DEFAULT_STATUS_CODE.error)
+        .send({ message: DEFAULT_STATUS_CODE.message });
     });
 };
 const getUsers = (req, res) => {
   User.find({})
     .orFail()
     .then((user) => res.send(user))
-    .catch((err) => {
-      console.error(err);
-      if (err.name === "DocumentNotFoundError") {
+    .catch((error) => {
+      console.error(error);
+      if (error.name === "DocumentNotFoundError") {
         return res
           .status(EXISTENTIAL_STATUS_CODE)
-          .send({ EXISTENTIAL_STATUS_CODE: message });
-      } else if (err.name === "CastError") {
+          .error.send({ message: EXISTENTIAL_STATUS_CODE.message });
+      }
+      if (error.name === "CastError") {
         res
-          .status(BAD_REQUEST_STATUS_CODE)
-          .send({ BAD_REQUEST_STATUS_CODE: message });
+          .status(BAD_REQUEST_STATUS_CODE.error)
+          .send({ message: BAD_REQUEST_STATUS_CODE.message });
       }
       return res
-        .status(DEFAULT_STATUS_CODE)
-        .send({ DEFAULT_STATUS_CODE: message });
+        .status(DEFAULT_STATUS_CODE.error)
+        .send({ message: DEFAULT_STATUS_CODE.message });
     });
 };
 
@@ -51,16 +52,16 @@ const createUser = (req, res) => {
 
   User.create({ name, avatar })
     .then((user) => res.status(201).send(user))
-    .catch((err) => {
-      console.error(err);
-      if (err.name === "ValidationError") {
+    .catch((error) => {
+      console.error(error);
+      if (error.name === "ValidationError") {
         return res
-          .status(BAD_REQUEST_STATUS_CODE)
-          .send({ BAD_REQUEST_STATUS_CODE: message });
+          .status(BAD_REQUEST_STATUS_CODE.error)
+          .send({ message: BAD_REQUEST_STATUS_CODE.message });
       }
       return res
-        .status(DEFAULT_STATUS_CODE)
-        .send({ DEFAULT_STATUS_CODE: message });
+        .status(DEFAULT_STATUS_CODE.error)
+        .send({ message: DEFAULT_STATUS_CODE.message });
     });
 };
 

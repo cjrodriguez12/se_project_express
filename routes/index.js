@@ -1,12 +1,13 @@
 const router = require("express").Router();
 const itemRouter = require("./clothingItem");
-const userRouter = require("./users");
+const userrouter = require("./users");
+const { EXISTENTIAL_STATUS_CODE } = require("../utils/errors");
 
-router.use("/users", userRouter);
+router.use("/users", userrouter);
 router.use("/items", itemRouter);
 router.use((req, res) => {
   res
     .status(EXISTENTIAL_STATUS_CODE)
-    .send({ EXISTENTIAL_STATUS_CODE: message });
+    .send({ message: EXISTENTIAL_STATUS_CODE.message });
 });
 module.exports = router;

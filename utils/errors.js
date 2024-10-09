@@ -10,7 +10,7 @@ const DEFAULT_STATUS_CODE = {
   message: "An error has occurred on the server.",
   error: 500,
 };
-exports = {
+module.exports = {
   BAD_REQUEST_STATUS_CODE,
   EXISTENTIAL_STATUS_CODE,
   DEFAULT_STATUS_CODE,

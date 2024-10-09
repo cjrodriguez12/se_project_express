@@ -7,13 +7,13 @@ const {
   deleteItem,
   getItems,
 } = require("../controlllers/clothingItem");
-//crud
-router.get("/items", getItems);
-//create
+// crud
+router.get("/", getItems);
+// create
 router.post("/", createItem);
-//delete items
-router.delete("/items/:itemId", deleteItem);
+// delete items
+router.delete("/:itemId", deleteItem);
 // Like and dislike
-router.put("/items/:itemId/likes", likeItem);
-router.delete("/items/:itemId/likes", dislikeItem);
+router.put("/:itemId/likes", likeItem);
+router.delete("/:itemId/likes", dislikeItem);
 module.exports = router;
