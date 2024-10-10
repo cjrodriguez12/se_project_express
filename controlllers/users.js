@@ -18,10 +18,11 @@ const findUsers = (req, res) => {
         res
           .status(BAD_REQUEST_STATUS_CODE.error)
           .send({ message: BAD_REQUEST_STATUS_CODE.message });
+      } else {
+        res
+          .status(DEFAULT_STATUS_CODE.error)
+          .send({ message: DEFAULT_STATUS_CODE.message });
       }
-      return res
-        .status(DEFAULT_STATUS_CODE.error)
-        .send({ message: DEFAULT_STATUS_CODE.message });
     });
 };
 const getUsers = (req, res) => {
@@ -36,7 +37,7 @@ const getUsers = (req, res) => {
           .error.send({ message: EXISTENTIAL_STATUS_CODE.message });
       }
       if (error.name === "CastError") {
-        res
+        return res
           .status(BAD_REQUEST_STATUS_CODE.error)
           .send({ message: BAD_REQUEST_STATUS_CODE.message });
       }

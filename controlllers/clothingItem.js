@@ -23,21 +23,21 @@ const deleteItem = (req, res) =>
       if (error.name === "DocumentNotFoundError") {
         res
           .status(EXISTENTIAL_STATUS_CODE.error)
-          .send({ message: EXISTENTIAL_STATUS_CODE.message, error });
+          .send({ message: EXISTENTIAL_STATUS_CODE.message });
       } else if (error.name === "CastError") {
         res
           .status(BAD_REQUEST_STATUS_CODE.error)
-          .send({ message: BAD_REQUEST_STATUS_CODE.message, error });
+          .send({ message: BAD_REQUEST_STATUS_CODE.message });
       } else {
         res
           .status(DEFAULT_STATUS_CODE.error)
-          .send({ message: DEFAULT_STATUS_CODE.message, error });
+          .send({ message: DEFAULT_STATUS_CODE.message });
       }
     });
 const createItem = (req, res) => {
   console.log(req);
   console.log(req.body);
-  const { owner } = req.user._id;
+  const owner = req.user._id;
   const { name, weather, imageUrl } = req.body;
   ClothingItem.create({ name, weather, imageUrl, owner })
     .then((item) => {
@@ -47,26 +47,14 @@ const createItem = (req, res) => {
     .catch((e) => {
       if (e.name === "ValidationError") {
         return res
-          .status(EXISTENTIAL_STATUS_CODE.error)
-          .send({ message: EXISTENTIAL_STATUS_CODE.message });
+          .status(BAD_REQUEST_STATUS_CODE.error)
+          .send({ message: BAD_REQUEST_STATUS_CODE.message });
       }
       // if no errors match, return a response with status code 500
       return res
         .status(DEFAULT_STATUS_CODE.error)
         .send({ message: DEFAULT_STATUS_CODE.message });
     });
-
-  //   ClothingItem.findById(userId)
-  //     .orFail() // throws a DocumentNotFounderror
-  //     .then((item) => {
-  //       res.send(item); // skipped, because an error was thrown
-  //     })
-  //     .catch((error) => {
-  //       console.error(
-  //         `error ${err.name} with the message ${err.message} has occurred while executing the code`,
-  //         error
-  //       );
-  //     });
 };
 
 const likeItem = (req, res) =>
@@ -83,15 +71,15 @@ const likeItem = (req, res) =>
       if (error.name === "DocumentNotFoundError") {
         res
           .status(EXISTENTIAL_STATUS_CODE.error)
-          .send({ message: EXISTENTIAL_STATUS_CODE.message, error });
+          .send({ message: EXISTENTIAL_STATUS_CODE.message });
       } else if (error.name === "CastError") {
         res
           .status(BAD_REQUEST_STATUS_CODE.error)
-          .send({ message: BAD_REQUEST_STATUS_CODE.message, error });
+          .send({ message: BAD_REQUEST_STATUS_CODE.message });
       } else {
         res
           .status(DEFAULT_STATUS_CODE.error)
-          .send({ message: DEFAULT_STATUS_CODE.message, error });
+          .send({ message: DEFAULT_STATUS_CODE.message });
       }
     });
 const dislikeItem = (req, res) =>
@@ -108,15 +96,15 @@ const dislikeItem = (req, res) =>
       if (error.name === "DocumentNotFoundError") {
         res
           .status(EXISTENTIAL_STATUS_CODE.error)
-          .send({ message: EXISTENTIAL_STATUS_CODE.message, error });
+          .send({ message: EXISTENTIAL_STATUS_CODE.message });
       } else if (error.name === "CastError") {
         res
           .status(BAD_REQUEST_STATUS_CODE.error)
-          .send({ message: BAD_REQUEST_STATUS_CODE.message, error });
+          .send({ message: BAD_REQUEST_STATUS_CODE.message });
       } else {
         res
           .status(DEFAULT_STATUS_CODE.error)
-          .send({ message: DEFAULT_STATUS_CODE.message, error });
+          .send({ message: DEFAULT_STATUS_CODE.message });
       }
     });
 module.exports = {

@@ -7,7 +7,7 @@ router.use("/users", userrouter);
 router.use("/items", itemRouter);
 router.use((req, res) => {
   res
-    .status(EXISTENTIAL_STATUS_CODE)
+    .status(EXISTENTIAL_STATUS_CODE.error)
     .send({ message: EXISTENTIAL_STATUS_CODE.message });
 });
 module.exports = router;
