@@ -10,8 +10,14 @@ const DEFAULT_STATUS_CODE = {
   message: "An error has occurred on the server.",
   error: 500,
 };
+const CONFLICT_STATUS_CODE = {
+  message:
+    "request cannot be completed because it conflicts with the current state of a resource",
+  error: 409,
+};
 module.exports = {
   BAD_REQUEST_STATUS_CODE,
   EXISTENTIAL_STATUS_CODE,
   DEFAULT_STATUS_CODE,
+  CONFLICT_STATUS_CODE,
 };
