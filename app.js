@@ -19,9 +19,14 @@ app.use((req, res, next) => {
   };
   next();
 });
+// Sign In + Sign Up
+app.post("/signin", login);
+app.post("/signup", createUser);
+app.use(auth);
+// app.use('/posts', require('./routes/posts'));
+//
 app.use(express.json());
 app.use("/", mainRouter);
-
 app.listen(PORT, () => {
   console.log(`server is listening on port: ${PORT}`);
 });
