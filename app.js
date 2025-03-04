@@ -13,12 +13,6 @@ mongoose
     console.log("connected to DB");
   })
   .catch(console.error);
-app.use((req, res, next) => {
-  req.user = {
-    _id: "66acf6e434e0bb45cc5c1c9c", // paste the _id of the test user created in the previous step
-  };
-  next();
-});
 // Sign In + Sign Up
 app.post("/signin", login);
 app.post("/signup", createUser);
