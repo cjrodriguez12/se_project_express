@@ -2,6 +2,8 @@ const User = require("../models/user");
 const { BAD_REQUEST_STATUS_CODE } = require("../utils/errors");
 const { EXISTENTIAL_STATUS_CODE } = require("../utils/errors");
 const { DEFAULT_STATUS_CODE } = require("../utils/errors");
+const { JWT_SECRET } = require("../utils/config");
+const validator = require("validator");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -16,7 +18,7 @@ module.exports.login = (req, res) => {
       password: hash,
     })
   );
-
+  // find user
   return User.findUserByCredentials(email, password)
     .then((user) => {
       // authentication successful! user is in the user variable
@@ -43,8 +45,8 @@ module.exports.login = (req, res) => {
     });
 };
 // GET USERS
-const findUsers = (req, res) => {
-  const { userId } = req.params;
+const getCurrentUsers = (req, res) => {
+  const { userId } = req.user;
   User.findById(userId)
     .orFail()
     .then((user) => res.send(user))
@@ -104,4 +106,29 @@ const createUser = (req, res) => {
         .send({ message: DEFAULT_STATUS_CODE.message });
     });
 };
-module.exports = { getUsers, createUser, findUsers };
+const updateUser = (req, res) => {
+  const { name, avatar } = req.user;
+  const opts = { runValidators: true };
+  name.validate(validator());
+};
+
+//the following code demonstrates how to make empty string '' an invalid value for all string paths.
+mongoose.Schema.Types.String.set("validate", (v) => v == null || v > 0);
+
+const userSchema = new Schema({
+  name: String,
+  email: String,
+});
+const User = db.model("User", userSchema);
+
+const user = new User({ name: "", email: "" });
+
+const err = await user.validate().then(
+  () => null,
+  (err) => err
+);
+err.errors["name"]; // ValidatorError
+err.errors["email"]; // ValidatorError
+//
+
+module.exports = { getUsers, createUser, getCurrentUsers };
