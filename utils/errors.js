@@ -1,3 +1,7 @@
+const UNAUTHORIZED_STATUS_CODE = {
+  message: "Invalid data passed to the method(s)",
+  error: 401,
+};
 const BAD_REQUEST_STATUS_CODE = {
   message: "Invalid data passed to the method(s)",
   error: 400,

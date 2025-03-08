@@ -107,9 +107,20 @@ const updateUser = (req, res) => {
 
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
+
+  // check if email and password are valid
+  if (!validator.isEmail(email)) {
+    return res
+      .status(BAD_REQUEST_STATUS_CODE.error)
+      .send({ message: BAD_REQUEST_STATUS_CODE.message });
+  }
+  if (!validator.isLength(password, { min: 8 })) {
+    return res
+      .status(BAD_REQUEST_STATUS_CODE.error)
+      .send({ message: BAD_REQUEST_STATUS_CODE.message });
+  }
   // find user
   User.findUserByCredentials(email, password)
-    .orFail()
     // if user is found, create a token
     // and send it to the client
     // the token is signed with the secret key
@@ -129,28 +140,14 @@ module.exports.login = (req, res) => {
           .status(BAD_REQUEST_STATUS_CODE.error)
           .send({ message: BAD_REQUEST_STATUS_CODE.message });
       }
+      if (error.name === "DocumentNotFoundError") {
+        return res
+          .status(UNAUTHORIZED_STATUS_CODE)
+          .error.send({ message: UNAUTHORIZED_STATUS_CODE.message });
+      }
       return res
         .status(DEFAULT_STATUS_CODE.error)
         .send({ message: DEFAULT_STATUS_CODE.message });
     });
 };
-//the following code demonstrates how to make empty string '' an invalid value for all string paths.
-// mongoose.Schema.Types.String.set("validate", (v) => v == null || v > 0);
-
-// const userSchema = new Schema({
-//   name: String,
-//   email: String,
-// });
-// const User = db.model("User", userSchema);
-
-// const user = new User({ name: "", email: "" });
-
-// const err = await user.validate().then(
-//   () => null,
-//   (err) => err
-// );
-// err.errors["name"]; // ValidatorError
-// err.errors["email"]; // ValidatorError
-//
-
 module.exports = { getUsers, createUser, getCurrentUsers, updateUser, login };
