@@ -7,43 +7,7 @@ const validator = require("validator");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-//The method is ready. Now we can apply it to the authentication handler:
-// controllers/users.js
 
-module.exports.login = (req, res) => {
-  const { email, password } = req.body;
-  bcrypt.hash(req.body.password, 10).then((hash) =>
-    User.create({
-      email: req.body.email,
-      password: hash,
-    })
-  );
-  // find user
-  return User.findUserByCredentials(email, password)
-    .then((user) => {
-      // authentication successful! user is in the user variable
-      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
-        expiresIn: "7d",
-      });
-      res.send({ token });
-    })
-    .then((user) => res.status(201).send(user))
-    .catch((error) => {
-      console.error(error);
-      if (error.name === "ValidationError") {
-        return res
-          .status(BAD_REQUEST_STATUS_CODE.error)
-          .send({ message: BAD_REQUEST_STATUS_CODE.message });
-      }
-      return res
-        .status(DEFAULT_STATUS_CODE.error)
-        .send({ message: DEFAULT_STATUS_CODE.message });
-    })
-    .catch((err) => {
-      // authentication error
-      res.status(401).send({ message: err.message });
-    });
-};
 // GET USERS
 const getCurrentUsers = (req, res) => {
   const { userId } = req.user;
@@ -107,28 +71,86 @@ const createUser = (req, res) => {
     });
 };
 const updateUser = (req, res) => {
-  const { name, avatar } = req.user;
-  const opts = { runValidators: true };
-  name.validate(validator());
+  const allowedUpdates = ["name", "avatar"];
+  const updates = Object.keys(req.body);
+  const isValidOperation = updates.every((update) =>
+    allowedUpdates.includes(update)
+  );
+  const userId = req.user._id;
+  const { name, avatar } = req.body;
+  if (!isValidOperation) {
+    return res
+      .status(BAD_REQUEST_STATUS_CODE.error)
+      .send({ message: BAD_REQUEST_STATUS_CODE.message });
+  }
+  User.findByIdAndUpdate(
+    userId,
+    { name, avatar },
+    { new: true, runValidators: true }
+  )
+    .orFail()
+    .then((user) => res.send(user))
+    .catch((error) => {
+      console.error(error);
+      if (error.name === "ValidationError") {
+        return res
+          .status(BAD_REQUEST_STATUS_CODE.error)
+          .send({ message: BAD_REQUEST_STATUS_CODE.message });
+      }
+      return res
+        .status(DEFAULT_STATUS_CODE.error)
+        .send({ message: DEFAULT_STATUS_CODE.message });
+    });
 };
+//The method is ready. Now we can apply it to the authentication handler:
+// controllers/users.js
 
+module.exports.login = (req, res) => {
+  const { email, password } = req.body;
+  // find user
+  User.findUserByCredentials(email, password)
+    .orFail()
+    // if user is found, create a token
+    // and send it to the client
+    // the token is signed with the secret key
+    // and expires in 7 days
+    // the token is sent in the response body
+    .then((user) => {
+      // authentication successful! user is in the user variable
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+        expiresIn: "7d",
+      });
+      res.send({ token });
+    })
+    .catch((error) => {
+      console.error(error);
+      if (error.name === "ValidationError") {
+        return res
+          .status(BAD_REQUEST_STATUS_CODE.error)
+          .send({ message: BAD_REQUEST_STATUS_CODE.message });
+      }
+      return res
+        .status(DEFAULT_STATUS_CODE.error)
+        .send({ message: DEFAULT_STATUS_CODE.message });
+    });
+};
 //the following code demonstrates how to make empty string '' an invalid value for all string paths.
-mongoose.Schema.Types.String.set("validate", (v) => v == null || v > 0);
+// mongoose.Schema.Types.String.set("validate", (v) => v == null || v > 0);
 
-const userSchema = new Schema({
-  name: String,
-  email: String,
-});
-const User = db.model("User", userSchema);
+// const userSchema = new Schema({
+//   name: String,
+//   email: String,
+// });
+// const User = db.model("User", userSchema);
 
-const user = new User({ name: "", email: "" });
+// const user = new User({ name: "", email: "" });
 
-const err = await user.validate().then(
-  () => null,
-  (err) => err
-);
-err.errors["name"]; // ValidatorError
-err.errors["email"]; // ValidatorError
+// const err = await user.validate().then(
+//   () => null,
+//   (err) => err
+// );
+// err.errors["name"]; // ValidatorError
+// err.errors["email"]; // ValidatorError
 //
 
-module.exports = { getUsers, createUser, getCurrentUsers };
+module.exports = { getUsers, createUser, getCurrentUsers, updateUser, login };
