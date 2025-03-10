@@ -2,6 +2,8 @@ const User = require("../models/user");
 const { BAD_REQUEST_STATUS_CODE } = require("../utils/errors");
 const { EXISTENTIAL_STATUS_CODE } = require("../utils/errors");
 const { DEFAULT_STATUS_CODE } = require("../utils/errors");
+const { UNAUTHORIZED_STATUS_CODE } = require("../utils/errors");
+const { CONFLICT_STATUS_CODE } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 const validator = require("validator");
 const mongoose = require("mongoose");
@@ -102,6 +104,7 @@ const updateUser = (req, res) => {
         .send({ message: DEFAULT_STATUS_CODE.message });
     });
 };
+// The login method is responsible for authenticating the user.
 //The method is ready. Now we can apply it to the authentication handler:
 // controllers/users.js
 
@@ -140,7 +143,7 @@ module.exports.login = (req, res) => {
           .status(BAD_REQUEST_STATUS_CODE.error)
           .send({ message: BAD_REQUEST_STATUS_CODE.message });
       }
-      if (error.name === "DocumentNotFoundError") {
+      if (error.name === "UnauthorizedError") {
         return res
           .status(UNAUTHORIZED_STATUS_CODE)
           .error.send({ message: UNAUTHORIZED_STATUS_CODE.message });
