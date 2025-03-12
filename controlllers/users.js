@@ -59,7 +59,11 @@ const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
   User.create({ name, avatar, email, password })
-    .then((user) => res.status(201).send(user))
+    .then((user) => {
+      const userData = user.toObject();
+      delete userData.password;
+      res.status(201).send(userData);
+    })
     .catch((error) => {
       console.error(error);
       if (error.name === "ValidationError") {
