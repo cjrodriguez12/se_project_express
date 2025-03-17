@@ -1,6 +1,9 @@
 # WTWR (What to Wear?): Back End
 
 Initial setup of Express database including configuring routes, controllers, and handle errors.
+Implentation of Web Tokens(JWT)
+Routes and controllers are now implented with Authorization verified by JWT
+Adding Securty safeguards with the Select Property by excluding sensitive data from quieries.
 
 ## Running the Project
 
