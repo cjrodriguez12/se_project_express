@@ -6,6 +6,10 @@ const BAD_REQUEST_STATUS_CODE = {
   message: "Invalid data passed to the method(s)",
   error: 400,
 };
+const FORBIDDEN_STATUS_CODE = {
+  message: "Forbidden to access the requested resource",
+  error: 403,
+};
 const EXISTENTIAL_STATUS_CODE = {
   message: "Requested resource NOT found",
   error: 404,

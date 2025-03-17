@@ -15,6 +15,23 @@ const getItems = (req, res) => {
 };
 const deleteItem = (req, res) =>
   ClothingItem.findByIdAndDelete(req.params.itemId)
+    .select("+owner")
+    .then((item) => {
+      // select the owner field to check if the user is authorized
+      if (item.owner.toString() !== req.user._id) {
+        return res
+          .status(FORBIDDEN_STATUS_CODE.error)
+          .send({ message: FORBIDDEN_STATUS_CODE.message });
+      }
+      if (!item) {
+        return res
+          .status(EXISTENTIAL_STATUS_CODE.error)
+          .send({ message: EXISTENTIAL_STATUS_CODE.message });
+      }
+      res.send({ data: item });
+    }) // if item is not found, return a response with status code 404
+    // if item is found, return a response with status code 200
+
     .orFail()
     .then((item) => {
       res.send(item); // skipped, because an error was thrown
