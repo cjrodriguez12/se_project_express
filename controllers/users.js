@@ -31,6 +31,8 @@ const getCurrentUsers = (req, res) => {
     });
 };
 const getUsers = (req, res) => {
+  // find all users
+  // and send them to the client
   User.find({})
     .orFail()
     .then((user) => res.send(user))
@@ -126,10 +128,8 @@ module.exports.login = (req, res) => {
   // find user
   User.findUserByCredentials(email, password)
     // if user is found, create a token
-    // and send it to the client
     // the token is signed with the secret key
     // and expires in 7 days
-    // the token is sent in the response body
     .then((user) => {
       // authentication successful! user is in the user variable
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
