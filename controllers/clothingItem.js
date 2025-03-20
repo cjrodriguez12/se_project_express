@@ -2,6 +2,7 @@ const ClothingItem = require("../models/clothingItem");
 const { BAD_REQUEST_STATUS_CODE } = require("../utils/errors");
 const { EXISTENTIAL_STATUS_CODE } = require("../utils/errors");
 const { DEFAULT_STATUS_CODE } = require("../utils/errors");
+const { FORBIDDEN_STATUS_CODE } = require("../utils/errors");
 
 const getItems = (req, res) => {
   ClothingItem.find({})

@@ -3,11 +3,8 @@ const { BAD_REQUEST_STATUS_CODE } = require("../utils/errors");
 const { EXISTENTIAL_STATUS_CODE } = require("../utils/errors");
 const { DEFAULT_STATUS_CODE } = require("../utils/errors");
 const { UNAUTHORIZED_STATUS_CODE } = require("../utils/errors");
-const { CONFLICT_STATUS_CODE } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 const validator = require("validator");
-const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 // GET USERS

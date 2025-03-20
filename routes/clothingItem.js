@@ -6,7 +6,7 @@ const {
   dislikeItem,
   deleteItem,
   getItems,
-} = require("../controlllers/clothingItem");
+} = require("../controllers/clothingItem");
 // crud
 router.get("/", getItems);
 // create
