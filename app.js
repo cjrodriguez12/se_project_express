@@ -12,9 +12,12 @@ mongoose
     console.log("connected to DB");
   })
   .catch(console.error);
+app.use(cors());
+app.use(express.json({ limit: "10kb" }));
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
-app.use(express.json({ limit: "10kb" }));
+//CORS headers
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
@@ -23,10 +26,8 @@ app.use((req, res, next) => {
   );
   next();
 });
-app.use("/", mainRouter);
-
 app.use(auth);
-app.use(cors());
+app.use("/", mainRouter);
 // Sign In + Sign Up
 app.post("/signin", login);
 app.post("/signup", createUser);

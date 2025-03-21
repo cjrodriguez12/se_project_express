@@ -9,7 +9,7 @@ const jwt = require("jsonwebtoken");
 
 // GET USERS
 const getCurrentUsers = (req, res) => {
-  const { userId } = req.user;
+  const userId = req.user._id;
   User.findById(userId)
     .orFail()
     .then((user) => res.send(user))
@@ -23,6 +23,10 @@ const getCurrentUsers = (req, res) => {
         res
           .status(BAD_REQUEST_STATUS_CODE.error)
           .send({ message: BAD_REQUEST_STATUS_CODE.message });
+      } else if (error.name === "UnauthorizedError") {
+        res
+          .status(UNAUTHORIZED_STATUS_CODE.error)
+          .send({ message: UNAUTHORIZED_STATUS_CODE.message });
       } else {
         res
           .status(DEFAULT_STATUS_CODE.error)
@@ -40,8 +44,8 @@ const getUsers = (req, res) => {
       console.error(error);
       if (error.name === "DocumentNotFoundError") {
         return res
-          .status(EXISTENTIAL_STATUS_CODE)
-          .error.send({ message: EXISTENTIAL_STATUS_CODE.message });
+          .status(EXISTENTIAL_STATUS_CODE.error)
+          .send({ message: EXISTENTIAL_STATUS_CODE.message });
       }
       if (error.name === "CastError") {
         return res
@@ -81,7 +85,7 @@ const updateUser = (req, res) => {
   const isValidOperation = updates.every((update) =>
     allowedUpdates.includes(update)
   );
-  const userId = req.user._id;
+  const userId = req.params.userId;
   const { name, avatar } = req.body;
   if (!isValidOperation) {
     return res
@@ -111,7 +115,7 @@ const updateUser = (req, res) => {
 //The method is ready. Now we can apply it to the authentication handler:
 // controllers/users.js
 
-module.exports.login = (req, res) => {
+const login = (req, res) => {
   const { email, password } = req.body;
 
   // check if email and password are valid
@@ -146,8 +150,8 @@ module.exports.login = (req, res) => {
       }
       if (error.name === "UnauthorizedError") {
         return res
-          .status(UNAUTHORIZED_STATUS_CODE)
-          .error.send({ message: UNAUTHORIZED_STATUS_CODE.message });
+          .status(UNAUTHORIZED_STATUS_CODE.error)
+          .send({ message: UNAUTHORIZED_STATUS_CODE.message });
       }
       return res
         .status(DEFAULT_STATUS_CODE.error)
