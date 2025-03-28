@@ -6,6 +6,7 @@ const PORT = 3001;
 const app = express();
 const { login, createUser } = require("./controllers/users");
 const auth = require("./middlewares/auth");
+mongoose.set("strictQuery", false);
 mongoose
   .connect("mongodb://127.0.0.1:27017/wtwr_db")
   .then(() => {
@@ -25,12 +26,12 @@ app.use((req, res, next) => {
     "Origin, X-Requested-With, Content-Type, Accept"
   );
   next();
-});
-app.use(auth);
-app.use("/", mainRouter);
-// Sign In + Sign Up
+}); // Sign In + Sign Up
 app.post("/signin", login);
 app.post("/signup", createUser);
+// AUTH
+app.use(auth);
+app.use("/", mainRouter);
 
 // app.use('/posts', require('./routes/posts'));
 app.listen(PORT, () => {
