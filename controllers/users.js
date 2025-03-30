@@ -117,7 +117,7 @@ const updateUser = (req, res) => {
 
 const login = (req, res) => {
   const { email, password } = req.body;
-
+  console.log("Login attempt with:", { email, password: "****" });
   // check if email and password are valid
   if (!validator.isEmail(email)) {
     return res
@@ -142,6 +142,7 @@ const login = (req, res) => {
       res.send({ token });
     })
     .catch((error) => {
+      console.log("Login attempt with:", { email, password: "****" });
       console.error(error);
       if (error.name === "ValidationError") {
         return res
