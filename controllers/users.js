@@ -154,6 +154,11 @@ const login = (req, res) => {
           .status(UNAUTHORIZED_STATUS_CODE.error)
           .send({ message: UNAUTHORIZED_STATUS_CODE.message });
       }
+      if (error.name === "DocumentNotFoundError") {
+        return res
+          .status(EXISTENTIAL_STATUS_CODE.error)
+          .send({ message: EXISTENTIAL_STATUS_CODE.message });
+      }
       return res
         .status(DEFAULT_STATUS_CODE.error)
         .send({ message: DEFAULT_STATUS_CODE.message });
