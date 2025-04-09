@@ -19,23 +19,23 @@ const deleteItem = (req, res) =>
     .select("+owner")
     .then((item) => {
       // select the owner field to check if the user is authorized
-      if (item.owner.toString() !== req.user._id) {
-        return res
-          .status(FORBIDDEN_STATUS_CODE.error)
-          .send({ message: FORBIDDEN_STATUS_CODE.message });
-      }
       if (!item) {
         return res
           .status(EXISTENTIAL_STATUS_CODE.error)
           .send({ message: EXISTENTIAL_STATUS_CODE.message });
+      } else if (
+        // check if the user is authorized to delete the item
+        item.owner.toString() !== req.user._id
+      ) {
+        return res
+          .status(FORBIDDEN_STATUS_CODE.error)
+          .send({ message: FORBIDDEN_STATUS_CODE.message });
+      } else {
+        res
+          .status(DEFAULT_STATUS_CODE.error)
+          .send({ message: DEFAULT_STATUS_CODE.message });
       }
       res.send({ data: item });
-    }) // if item is not found, return a response with status code 404
-    // if item is found, return a response with status code 200
-
-    .orFail()
-    .then((item) => {
-      res.send(item); // skipped, because an error was thrown
     })
     .catch((error) => {
       if (error.name === "DocumentNotFoundError") {
@@ -46,10 +46,6 @@ const deleteItem = (req, res) =>
         res
           .status(BAD_REQUEST_STATUS_CODE.error)
           .send({ message: BAD_REQUEST_STATUS_CODE.message });
-      } else {
-        res
-          .status(DEFAULT_STATUS_CODE.error)
-          .send({ message: DEFAULT_STATUS_CODE.message });
       }
     });
 const createItem = (req, res) => {
