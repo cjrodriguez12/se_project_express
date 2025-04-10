@@ -23,17 +23,14 @@ const deleteItem = (req, res) =>
         return res
           .status(EXISTENTIAL_STATUS_CODE.error)
           .send({ message: EXISTENTIAL_STATUS_CODE.message });
-      } else if (
+      }
+      if (
         // check if the user is authorized to delete the item
         item.owner.toString() !== req.user._id
       ) {
         return res
           .status(FORBIDDEN_STATUS_CODE.error)
           .send({ message: FORBIDDEN_STATUS_CODE.message });
-      } else {
-        res
-          .status(DEFAULT_STATUS_CODE.error)
-          .send({ message: DEFAULT_STATUS_CODE.message });
       }
       res.send({ data: item });
     })
