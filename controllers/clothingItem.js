@@ -3,7 +3,7 @@ const { BAD_REQUEST_STATUS_CODE } = require("../utils/errors");
 const { EXISTENTIAL_STATUS_CODE } = require("../utils/errors");
 const { DEFAULT_STATUS_CODE } = require("../utils/errors");
 const { FORBIDDEN_STATUS_CODE } = require("../utils/errors");
-
+//
 const getItems = (req, res) => {
   ClothingItem.find({})
     .then((user) => res.send(user))
@@ -23,27 +23,25 @@ const deleteItem = (req, res) =>
         return res
           .status(EXISTENTIAL_STATUS_CODE.error)
           .send({ message: EXISTENTIAL_STATUS_CODE.message });
-      }
-      if (
-        // check if the user is authorized to delete the item
-        item.owner.toString() !== req.user._id
-      ) {
+      } // check if the user is authorized to delete the item
+      if (item.owner.toString() !== req.user._id) {
         return res
           .status(FORBIDDEN_STATUS_CODE.error)
           .send({ message: FORBIDDEN_STATUS_CODE.message });
       }
-      res.send({ data: item });
+      return ClothingItem.findByIdAndDelete(req.params.itemId).then(() =>
+        res.send({ message: "Item deleted" })
+      );
     })
     .catch((error) => {
-      if (error.name === "DocumentNotFoundError") {
-        res
-          .status(EXISTENTIAL_STATUS_CODE.error)
-          .send({ message: EXISTENTIAL_STATUS_CODE.message });
-      } else if (error.name === "CastError") {
-        res
+      if (error.name === "CastError") {
+        return res
           .status(BAD_REQUEST_STATUS_CODE.error)
           .send({ message: BAD_REQUEST_STATUS_CODE.message });
       }
+      return res
+        .status(DEFAULT_STATUS_CODE.error)
+        .send({ message: DEFAULT_STATUS_CODE.message });
     });
 const createItem = (req, res) => {
   console.log(req);
