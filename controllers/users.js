@@ -1,6 +1,10 @@
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
-const { BAD_REQUEST_STATUS_CODE } = require("../utils/errors");
+const bcrypt = require("bcryptjs");
+const {
+  BAD_REQUEST_STATUS_CODE,
+  CONFLICT_STATUS_CODE,
+} = require("../utils/errors");
 const { EXISTENTIAL_STATUS_CODE } = require("../utils/errors");
 const { DEFAULT_STATUS_CODE } = require("../utils/errors");
 const { UNAUTHORIZED_STATUS_CODE } = require("../utils/errors");
@@ -56,28 +60,46 @@ const getUsers = (req, res) => {
         .send({ message: DEFAULT_STATUS_CODE.message });
     });
 };
-
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
-  User.create({ name, avatar, email, password })
-    .then((user) => {
-      const userData = user.toObject();
-      delete userData.password;
-      res.status(201).send(userData);
+  // First hash the password
+  bcrypt
+    .hash(password, 11)
+    .then((hash) => {
+      // Create user with hashed password
+      return User.create({
+        name,
+        avatar,
+        email,
+        password: hash, // Store the hashed password
+      });
     })
-    .catch((error) => {
-      console.error(error);
-      if (error.name === "ValidationError") {
-        return res
-          .status(BAD_REQUEST_STATUS_CODE.error)
+    .then((user) => {
+      // Remove password from response
+      res.status(201).send({
+        name: user.name,
+        avatar: user.avatar,
+        email: user.email,
+        _id: user._id,
+      });
+    })
+    .catch((err) => {
+      if (err.code === 11000) {
+        // Duplicate email error
+        res
+          .status(CONFLICT_STATUS_CODE)
+          .send({ message: CONFLICT_STATUS_CODE.message });
+      } else if (err.name === "ValidationError") {
+        res
+          .status(BAD_REQUEST_STATUS_CODE)
           .send({ message: BAD_REQUEST_STATUS_CODE.message });
+      } else {
+        res
+          .status(DEFAULT_STATUS_CODE)
+          .send({ message: DEFAULT_STATUS_CODE.message });
       }
-      return res
-        .status(DEFAULT_STATUS_CODE.error)
-        .send({ message: DEFAULT_STATUS_CODE.message });
     });
-  return res.status(200).send({ message: "User created successfully" });
 };
 const updateUser = (req, res) => {
   const allowedUpdates = ["name", "avatar"];
@@ -110,10 +132,9 @@ const updateUser = (req, res) => {
         .status(DEFAULT_STATUS_CODE.error)
         .send({ message: DEFAULT_STATUS_CODE.message });
     });
-  return res.status(200).send({ message: "User updated successfully" });
 };
 // The login method is responsible for authenticating the user.
-//The method is ready. Now we can apply it to the authentication handler:
+// The method is ready. Now we can apply it to the authentication handler:
 // controllers/users.js
 
 const login = (req, res) => {
