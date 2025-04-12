@@ -1,7 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const mainRouter = require("./routes/index");
 const cors = require("cors");
+const mainRouter = require("./routes/index");
 const PORT = 3001;
 const app = express();
 const { login, createUser } = require("./controllers/users");

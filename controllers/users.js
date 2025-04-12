@@ -1,4 +1,3 @@
-const User = require("../models/user");
 const { BAD_REQUEST_STATUS_CODE } = require("../utils/errors");
 const { EXISTENTIAL_STATUS_CODE } = require("../utils/errors");
 const { DEFAULT_STATUS_CODE } = require("../utils/errors");
@@ -6,7 +5,7 @@ const { UNAUTHORIZED_STATUS_CODE } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
-
+const User = require("../models/user");
 // GET USERS
 const getCurrentUsers = (req, res) => {
   const userId = req.user._id;
@@ -78,6 +77,7 @@ const createUser = (req, res) => {
         .status(DEFAULT_STATUS_CODE.error)
         .send({ message: DEFAULT_STATUS_CODE.message });
     });
+  return res.status(200).send({ message: "User created successfully" });
 };
 const updateUser = (req, res) => {
   const allowedUpdates = ["name", "avatar"];
@@ -110,6 +110,7 @@ const updateUser = (req, res) => {
         .status(DEFAULT_STATUS_CODE.error)
         .send({ message: DEFAULT_STATUS_CODE.message });
     });
+  return res.status(200).send({ message: "User updated successfully" });
 };
 // The login method is responsible for authenticating the user.
 //The method is ready. Now we can apply it to the authentication handler:
