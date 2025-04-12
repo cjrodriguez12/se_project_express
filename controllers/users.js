@@ -88,15 +88,15 @@ const createUser = (req, res, next) => {
       if (err.code === 11000) {
         // Duplicate email error
         res
-          .status(CONFLICT_STATUS_CODE)
+          .status(CONFLICT_STATUS_CODE.error)
           .send({ message: CONFLICT_STATUS_CODE.message });
       } else if (err.name === "ValidationError") {
         res
-          .status(BAD_REQUEST_STATUS_CODE)
+          .status(BAD_REQUEST_STATUS_CODE.error)
           .send({ message: BAD_REQUEST_STATUS_CODE.message });
       } else {
         res
-          .status(DEFAULT_STATUS_CODE)
+          .status(DEFAULT_STATUS_CODE.error)
           .send({ message: DEFAULT_STATUS_CODE.message });
       }
     });
@@ -185,5 +185,6 @@ const login = (req, res) => {
         .status(DEFAULT_STATUS_CODE.error)
         .send({ message: DEFAULT_STATUS_CODE.message });
     });
+  return res.status(200).send({ message: "Login successful" });
 };
 module.exports = { getUsers, createUser, getCurrentUsers, updateUser, login };
