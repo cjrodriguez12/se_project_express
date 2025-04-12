@@ -1,10 +1,10 @@
+const validator = require("validator");
+const jwt = require("jsonwebtoken");
 const { BAD_REQUEST_STATUS_CODE } = require("../utils/errors");
 const { EXISTENTIAL_STATUS_CODE } = require("../utils/errors");
 const { DEFAULT_STATUS_CODE } = require("../utils/errors");
 const { UNAUTHORIZED_STATUS_CODE } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
-const validator = require("validator");
-const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 // GET USERS
 const getCurrentUsers = (req, res) => {
