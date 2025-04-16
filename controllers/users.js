@@ -1,14 +1,14 @@
-const validator = require("validator");
 const jwt = require("jsonwebtoken");
+const { JWT_SECRET } = require("../utils/config");
+const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const {
   BAD_REQUEST_STATUS_CODE,
   CONFLICT_STATUS_CODE,
+  EXISTENTIAL_STATUS_CODE,
+  DEFAULT_STATUS_CODE,
+  UNAUTHORIZED_STATUS_CODE,
 } = require("../utils/errors");
-const { EXISTENTIAL_STATUS_CODE } = require("../utils/errors");
-const { DEFAULT_STATUS_CODE } = require("../utils/errors");
-const { UNAUTHORIZED_STATUS_CODE } = require("../utils/errors");
-const { JWT_SECRET } = require("../utils/config");
 const User = require("../models/user");
 // GET USERS
 const getCurrentUsers = (req, res) => {
@@ -158,11 +158,15 @@ const login = (req, res) => {
     // and expires in 7 days
     .then((user) => {
       // authentication successful! user is in the user variable
+      console.log("User found:", user._id);
+      console.log("About to sign token with secret:", JWT_SECRET);
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
+      console.log("Token generated:", token);
       res.send({ token });
     })
+    // if user is not found, send an error
     .catch((error) => {
       console.log("Login attempt with:", { email, password: "****" });
       console.error(error);
@@ -185,6 +189,5 @@ const login = (req, res) => {
         .status(DEFAULT_STATUS_CODE.error)
         .send({ message: DEFAULT_STATUS_CODE.message });
     });
-  return res.status(200).send({ message: "Login successful" });
 };
 module.exports = { getUsers, createUser, getCurrentUsers, updateUser, login };

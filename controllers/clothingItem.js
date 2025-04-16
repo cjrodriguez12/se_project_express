@@ -3,7 +3,7 @@ const { BAD_REQUEST_STATUS_CODE } = require("../utils/errors");
 const { EXISTENTIAL_STATUS_CODE } = require("../utils/errors");
 const { DEFAULT_STATUS_CODE } = require("../utils/errors");
 const { FORBIDDEN_STATUS_CODE } = require("../utils/errors");
-//
+
 const getItems = (req, res) => {
   ClothingItem.find({})
     .then((user) => res.send(user))
@@ -29,9 +29,21 @@ const deleteItem = (req, res) =>
           .status(FORBIDDEN_STATUS_CODE.error)
           .send({ message: FORBIDDEN_STATUS_CODE.message });
       }
-      return ClothingItem.findByIdAndDelete(req.params.itemId).then(() =>
-        res.send({ message: "Item deleted" })
-      );
+      // if the user is authorized, delete the item
+      return ClothingItem.findByIdAndDelete(req.params.itemId)
+        .then(() => {
+          res.send({ message: "Item deleted successfully" });
+        })
+        .catch((error) => {
+          if (error.name === "CastError") {
+            return res
+              .status(BAD_REQUEST_STATUS_CODE.error)
+              .send({ message: BAD_REQUEST_STATUS_CODE.message });
+          }
+          return res
+            .status(DEFAULT_STATUS_CODE.error)
+            .send({ message: DEFAULT_STATUS_CODE.message });
+        });
     })
     .catch((error) => {
       if (error.name === "CastError") {
