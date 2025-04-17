@@ -14,36 +14,27 @@ const getItems = (req, res) => {
         .send({ message: DEFAULT_STATUS_CODE.message });
     });
 };
-const deleteItem = (req, res) =>
-  ClothingItem.findByIdAndDelete(req.params.itemId)
+const deleteItem = (req, res) => {
+  ClothingItem.findById(req.params.itemId)
     .select("+owner")
     .then((item) => {
-      // select the owner field to check if the user is authorized
       if (!item) {
         return res
           .status(EXISTENTIAL_STATUS_CODE.error)
           .send({ message: EXISTENTIAL_STATUS_CODE.message });
-      } // check if the user is authorized to delete the item
+      }
+
+      // Check if the logged-in user is the owner
       if (item.owner.toString() !== req.user._id) {
         return res
           .status(FORBIDDEN_STATUS_CODE.error)
           .send({ message: FORBIDDEN_STATUS_CODE.message });
       }
-      // if the user is authorized, delete the item
-      return ClothingItem.findByIdAndDelete(req.params.itemId)
-        .then(() => {
-          res.send({ message: "Item deleted successfully" });
-        })
-        .catch((error) => {
-          if (error.name === "CastError") {
-            return res
-              .status(BAD_REQUEST_STATUS_CODE.error)
-              .send({ message: BAD_REQUEST_STATUS_CODE.message });
-          }
-          return res
-            .status(DEFAULT_STATUS_CODE.error)
-            .send({ message: DEFAULT_STATUS_CODE.message });
-        });
+
+      // Authorized, proceed to delete
+      return item.deleteOne().then(() => {
+        res.send({ message: "Item deleted successfully" });
+      });
     })
     .catch((error) => {
       if (error.name === "CastError") {
@@ -51,10 +42,12 @@ const deleteItem = (req, res) =>
           .status(BAD_REQUEST_STATUS_CODE.error)
           .send({ message: BAD_REQUEST_STATUS_CODE.message });
       }
+
       return res
         .status(DEFAULT_STATUS_CODE.error)
         .send({ message: DEFAULT_STATUS_CODE.message });
     });
+};
 const createItem = (req, res) => {
   console.log(req);
   console.log(req.body);
