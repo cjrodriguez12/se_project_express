@@ -10,10 +10,10 @@ const {
 // crud
 router.get("/", getItems);
 // create
-router.post("/", createItem);
+router.post("/", auth, createItem);
 // delete items
 router.delete("/:itemId", deleteItem);
 // Like and dislike
-router.put("/:itemId/likes", likeItem);
-router.delete("/:itemId/likes", dislikeItem);
+router.put("/:itemId/likes", auth, likeItem);
+router.delete("/:itemId/likes", auth, dislikeItem);
 module.exports = router;

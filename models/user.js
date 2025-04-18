@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
+
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -32,21 +33,8 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-    minlength: 8,
     select: false,
   },
-});
-userSchema.pre("save", function (next) {
-  if (this.isModified("password")) {
-    return bcrypt
-      .hash(this.password, 10)
-      .then((hash) => {
-        this.password = hash;
-        next();
-      })
-      .catch(next);
-  }
-  return next();
 });
 userSchema.statics.findUserByCredentials = function findUserByCredentials(
   email,

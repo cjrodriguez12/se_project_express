@@ -21,11 +21,16 @@ app.use(cors());
 // Sign In + Sign Up
 app.post("/signup", createUser);
 app.post("/signin", login);
-
+app.get("/items");
 // AUTH
-app.use(auth);
 app.use("/", mainRouter);
 
+app.get("/users", auth, (req, res) => {
+  res.send("users");
+});
+app.get("/users/me", auth, (req, res) => {
+  res.send("users/me");
+});
 // app.use('/posts', require('./routes/posts'));
 app.listen(PORT, () => {
   console.log(`server is listening on port: ${PORT}`);

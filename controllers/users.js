@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
-const { JWT_SECRET } = require("../utils/config");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
+const { JWT_SECRET } = require("../utils/config");
 const {
   BAD_REQUEST_STATUS_CODE,
   CONFLICT_STATUS_CODE,
@@ -26,38 +26,11 @@ const getCurrentUsers = (req, res) => {
         res
           .status(BAD_REQUEST_STATUS_CODE.error)
           .send({ message: BAD_REQUEST_STATUS_CODE.message });
-      } else if (error.name === "UnauthorizedError") {
-        res
-          .status(UNAUTHORIZED_STATUS_CODE.error)
-          .send({ message: UNAUTHORIZED_STATUS_CODE.message });
       } else {
         res
           .status(DEFAULT_STATUS_CODE.error)
           .send({ message: DEFAULT_STATUS_CODE.message });
       }
-    });
-};
-const getUsers = (req, res) => {
-  // find all users
-  // and send them to the client
-  User.find({})
-    .orFail()
-    .then((user) => res.send(user))
-    .catch((error) => {
-      console.error(error);
-      if (error.name === "DocumentNotFoundError") {
-        return res
-          .status(EXISTENTIAL_STATUS_CODE.error)
-          .send({ message: EXISTENTIAL_STATUS_CODE.message });
-      }
-      if (error.name === "CastError") {
-        return res
-          .status(BAD_REQUEST_STATUS_CODE.error)
-          .send({ message: BAD_REQUEST_STATUS_CODE.message });
-      }
-      return res
-        .status(DEFAULT_STATUS_CODE.error)
-        .send({ message: DEFAULT_STATUS_CODE.message });
     });
 };
 const createUser = (req, res, next) => {
@@ -66,15 +39,15 @@ const createUser = (req, res, next) => {
   // First hash the password
   bcrypt
     .hash(password, 11)
-    .then((hash) => {
+    .then((hash) =>
       // Create user with hashed password
-      return User.create({
+      User.create({
         name,
         avatar,
         email,
         password: hash, // Store the hashed password
-      });
-    })
+      })
+    )
     .then((user) => {
       // Remove password from response
       res.status(201).send({
@@ -107,7 +80,7 @@ const updateUser = (req, res) => {
   const isValidOperation = updates.every((update) =>
     allowedUpdates.includes(update)
   );
-  const userId = req.params.userId;
+  const userId = req.user._id;
   const { name, avatar } = req.body;
   if (!isValidOperation) {
     return res
@@ -179,11 +152,6 @@ const login = (req, res) => {
         return res
           .status(UNAUTHORIZED_STATUS_CODE.error)
           .send({ message: UNAUTHORIZED_STATUS_CODE.message });
-      }
-      if (error.name === "DocumentNotFoundError") {
-        return res
-          .status(EXISTENTIAL_STATUS_CODE.error)
-          .send({ message: EXISTENTIAL_STATUS_CODE.message });
       }
       return res
         .status(DEFAULT_STATUS_CODE.error)
