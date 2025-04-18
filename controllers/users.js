@@ -33,7 +33,7 @@ const getCurrentUsers = (req, res) => {
       }
     });
 };
-const createUser = (req, res, next) => {
+const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
   // First hash the password
@@ -60,18 +60,18 @@ const createUser = (req, res, next) => {
     .catch((err) => {
       if (err.code === 11000) {
         // Duplicate email error
-        res
+        return res
           .status(CONFLICT_STATUS_CODE.error)
           .send({ message: CONFLICT_STATUS_CODE.message });
-      } else if (err.name === "ValidationError") {
-        res
+      }
+      if (err.name === "ValidationError") {
+        return res
           .status(BAD_REQUEST_STATUS_CODE.error)
           .send({ message: BAD_REQUEST_STATUS_CODE.message });
-      } else {
-        res
-          .status(DEFAULT_STATUS_CODE.error)
-          .send({ message: DEFAULT_STATUS_CODE.message });
       }
+      return res
+        .status(DEFAULT_STATUS_CODE.error)
+        .send({ message: DEFAULT_STATUS_CODE.message });
     });
 };
 const updateUser = (req, res) => {
@@ -105,11 +105,11 @@ const updateUser = (req, res) => {
         .status(DEFAULT_STATUS_CODE.error)
         .send({ message: DEFAULT_STATUS_CODE.message });
     });
+  return null;
 };
 // The login method is responsible for authenticating the user.
 // The method is ready. Now we can apply it to the authentication handler:
 // controllers/users.js
-
 const login = (req, res) => {
   const { email, password } = req.body;
   console.log("Login attempt with:", { email, password: "****" });
@@ -158,4 +158,4 @@ const login = (req, res) => {
         .send({ message: DEFAULT_STATUS_CODE.message });
     });
 };
-module.exports = { getUsers, createUser, getCurrentUsers, updateUser, login };
+module.exports = { createUser, getCurrentUsers, updateUser, login };
