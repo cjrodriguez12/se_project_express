@@ -2,10 +2,10 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const helmet = require("helmet");
+
 const PORT = 3001;
 const app = express();
 const { login, createUser } = require("./controllers/users");
-const auth = require("./middlewares/auth");
 const mainRouter = require("./routes/index");
 
 mongoose.set("strictQuery", false);
@@ -28,15 +28,6 @@ app.post("/signin", login);
 app.get("/items");
 // AUTH
 app.use("/", mainRouter);
-app.get("/clothingItems", auth, (req, res) => {
-  res.send("clothingItems");
-});
-app.get("/users", auth, (req, res) => {
-  res.send("users");
-});
-app.get("/users/me", auth, (req, res) => {
-  res.send("users/me");
-});
 // app.use('/posts', require('./routes/posts'));
 app.listen(PORT, () => {
   console.log(`server is listening on port: ${PORT}`);

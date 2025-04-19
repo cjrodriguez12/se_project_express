@@ -157,5 +157,6 @@ const login = (req, res) => {
         .status(DEFAULT_STATUS_CODE.error)
         .send({ message: DEFAULT_STATUS_CODE.message });
     });
+  return null;
 };
 module.exports = { createUser, getCurrentUsers, updateUser, login };
