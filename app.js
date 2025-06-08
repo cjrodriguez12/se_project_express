@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const helmet = require("helmet");
 
-const PORT = 3001;
+const PORT = 3000;
 const app = express();
 const { login, createUser } = require("./controllers/users");
 const mainRouter = require("./routes/index");
